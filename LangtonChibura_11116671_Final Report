@@ -1,0 +1,523 @@
+
+
+
+
+
+MSc COMPUTER SCIENCE
+
+NAME:			 LANGTON CHIBURA
+REGISTRATION NO.:                    	111166671
+SUBJECT:	APPLIED MACHINE LEARNING
+CODE NO:	 CSM 10
+SUBMISSION DATE:
+
+TITLE:	  1st July 2024
+
+FINAL COUSEWORK ASSESSMENT
+
+
+
+
+
+ 
+ 
+Introduction
+This document is a condensed report leading to a submission in satisfaction of the requirements of the implementation of machine learning techniques to a real- world machine learning problem. The data set was obtained for https://archive.ics.uci.edu/. The data focuses on the risk of maternal health in rural and remote areas in Bangladesh in particular and any developing part of the world in general. The problem is a classification problem, where a risk factor is used to determine the level of maternal risk. 
+The data is then prepared for machine learning using various techniques to select features relevant to predicting the risk level of a patient using various feature selection and extraction techniques as well as sampling to increase the computational speed of the process as well as removing irrelevant data. Since input variables are provided and the expected outcome is also available supervised classifiers were be used. The output is categorical hence supervised classification models like Logistic Regression, Decision Tree, K-Nearest Neighbors and Random Forest were implemented to generate a solution.
+The models are measured by their individual performances on the data basing on their predictive performances on the data, as well as against other models using the KFold validation technique. A candidate model is then used to predict the data and forms the basis of the solution to the problem.
+The Maternal Health Risk data set
+The narrative below summarized the Maternal Health Risk data set in terms of why the writer selected it and Its usefulness to society. Data characteristics are also explored in terms of skewedness, missing values, and other undesirable characteristics. The data is then prepared for use in a model.
+Choosing the data set
+Rationale for the choice of data set.
+Developing parts of the world are experiencing high maternal mortality rates especially in rural and remote areas mainly in rural and remote parts for the world, for example in Africa (Ahmed et al,2020). If early warning signs like high blood pressure and high heart rates are be detected using technology, prompt medical processes can be initiated to save the life of the pregnant mother. Awareness on the part of the pregnant mother can be initiated so that they take steps like being close to health facilities since in developing countries access to medical facilities is both scarce and far, distance wise. The high maternal rates are so worrisome that they are a cause of concern for the United Nations as well (Ahmed et al, 2020) This dataset offers a possible solution for such a global problem since it assists in early medical diagnoses and prompt action on the part of pregnant women in the world in general and in developing
+SECTION A: DATA PREPARATION FOR MODELLING
+Loading and exploring the Data
+The data Maternal Health Risk was loaded onto the Desktop directory and Jupiter Notebook was used to load the file and the initial exploratory stage was initiated to get a feel of how the data looks like as shown in appendix 1. The data set was named maternityRisk.
+After a quick exploration of 10 columns of data head, data tail and random samples. it is noted that the data looks good in terms the arrangement of columns and rows. The next task is to analyse the internal data itself to determine whether the columns have the corrected data types for example the Age column has integers only and that there are no columns without entries.
+The info () method was used and shows that data has no null values in the entries and the result is shown in Appendix 2The data frame is fairly clean with no NAN-values and the data types match the expected types, for example age is an integer and BodyTemp is a floating-point number.
+The next task was to explore the statistics describing the data (Descriptive Statistics) using the describe method. This gives the writer a general picture of the basic statistics surrounding the data as displayed in Appendix 2a. The descriptive statistics for the maternityRisk data set were collected in Appendix 2b for use in later comparisons.
+Exploring the dataset
+The next activity was to check the data type of columns is important to get a feel of the values that exist in each column.  The next step was to determine class distributions to ascertain the balance of the values for al attributes, given that they are not very many in this data set. See Appendix 7 to Appendix 9.
+The class distributions show that the data is balanced across all attributes and there are no attributes with unrecorded values as shown in Appendix 8.
+Determining correlations between data.
+ This tells us how values may change and may not change together since the logistic regression model may not perform well if the data is closely correlated. To be able to generate the correlations, created a copy of the data frame and converted the values of the risk levels to a floating-point number since the values are in form of a string at the moment. the values assigned are High Risk = 2, Medium Risk =1 and Low risk = 0. The correlations are then determined and plotted. See Appendix 27.
+
+SECTION B:    DATA PREPARATION
+To prepare the data for machine learning, a copy of the original data was and named maternityRiskCopy in order to preserve the original data set created and all preparations are done on the copy and not the original dataset. See Appendix 27.
+A view of how the features relate to each other is created by getting a correlation matrix. The more positive the value, the more correlated the features are to each other. This helps to determine the features that are closely related to the target outcome. From the correlation matrix in Appendix 27, it can be noted that the highest correlation between a feature and the expected outcome Risk Level exists between SystolicBP and the RiskLevel (0,325681), so systolic BP has the highest likelihood of causing maternity deaths. The heart rate however has the least impact on maternity risk (0.154731).
+From the visualization chart on Appendix 28, it can be noted that the highest correlation between feature 3(BS) and the expected outcome item number 6. Risk Level exists between SystolicBP and the RiskLevel (0,325681), so systolic BS has the highest likelihood of causing maternity deaths. The heart rate however has the least impact on maternity risk (0.154731).
+Data skewness
+The next task is to check whether the data is skewed or not using the skew() function. Appendix 29 to Appendix 32 show the skewness of the data. It is important to reduce skewness, especially positive skewness since some model accuracy is reduced if the data is highly skewed.
+The histograms in Appendix 32, Appendix show that the variables age, BS and body temperature are not normalized as they are highly skewed to the positive side. Normalization had to be implemented using log normalization as shown in Appendix 33. Log transform dis not yield significant transformation and square root transform had to be implemented as shown in Appendix 37. Desirable outputs were obtained. See illustrations on Appendix 38. 
+As mentioned before. Most of the data in maternityRiskCopy is skewed to the right i.e., positive skew. While Log transformation is the best transform method to make the distributions normal by reducing the skew, The next task was to further reduce skewness by applying square root and quantile transformation.
+SECTION C: DATA TRANSFORMATION
+The skewed data in the visualizations above needed to be transformed so that it follows a normal distribution curve for the model to work well. Firstly, an attempt was made to rescale the data then we normalize it. Log transformation was performed successfully to reduce the skewness of the data as shown in  on the visualization plots in Appendices 31, 32 and 33. It was noticed that the skewness of the BS, Body Temperature and Heart rate has not improved by using the log transform method. In the next section the square root transformation is applied to the three. The skewness of the data was significantly improved as shown in Appendix 38. It can be noted that the skew for BodyTemp column reduced a lot to around 1.25. The second normalization process using quantile normalization contributed a lot to changing the data to follow a normal distribution.
+SECTION C: FEATURE SELECTION
+By inspection, it can be concluded that the data set will need all its features when applied to a model will use all features given their correlation to the target variable as shown in the correlations matrix in Appendix 28 and the statistical data values like the standard deviation also confirm the same. Feature selection methods like filter and wrapper methods are however required to confirm the features to be selected in a more empirical sense. Filter and wrapper methods were implemented for feature selection and the selected features are 'DiastolicBP’, 'BS', 'BodyTemp' and 'HeartRate'. See Appendix 49. Chi-squared tests were also used to confirm the features selected by the variance method. See Appendix 51. The features DiastolicBP, BS, BodyTemp and HeartRate have the highest score hence are selected. A wrapper method for feature selection was also used to confirm the features and to eliminate features that have little contribution to the prediction using recursive feature elimination. See Appendix 50. The wrapper method selected the features SystolicBP, BS and HeartRate. The writer chose to go by the results of the variance test.
+Dropping irrelevant features form the dataset
+The feature not selected were dropped and confirmation of the drop made in as shown in Appendix 52.
+
+SECTION D: MODEL SELECTION
+In this section, three models will be implemented on a preprocessed data set. Since this is a classification problem, and the values are provided, making it a supervised problem, candidate methods are Decision trees, Random forests and K-nearest neighbors (KNN).
+About the models
+The Decision Tree Model 
+Decision Tree model is an easy-to-use model that predicts the outcome of a prediction using the concepts of entropy and information gain as well as the “gini’ impurity. In our problem, the aim is to predict the effect of maternity risks. The result is classified as either high risk, low risk or medium risk. Decision tree algorithms are ideal and, in this case, we can apply the model on the raw original subset since Decision Tree algorithms have in-built data cleaning functionalities.
+The RandomForest Classifier
+The Random Forest algorithm This is a method that aggregates decision trees to form an ensemble. A majority vote will yield the predicted class as the samples are collected and replaced; a method called bagging. The training set or bootstrap sample is drawn randomly from a training set, with replacement. This method is ideal in our case
+k-nearest neighbors (KNN
+k-nearest neighbors (KNN) This model uses proximity to make classification or prediction. In our problem we need to predict the outcome of maternity risks as either high risk, medium risk or low risk. KNN is therefore ideal as it approximates an input to its closest estimate in a class.
+Comparing the models using KFold Cross validation
+Testing the models using KFold cross-validation
+The models were tested using KFold cross validation to determine their accuracy on the data and the following accuracies were obtained. See Appendix 61. Accuracy of the DecisionTreeClassifier: 79.189% (4.898%), Accuracy of the RandomForestClassifier: 79.977% (4.898%) Accuracy of the KNeighborsClassifier: 68.142% (4.898%)
+From the KFold validation tests, it can be observed that the RandomForest Classifier model has a more superior accuracy although and the standard deviation is uniform across the models. The model of choice, therefore, is the RandomForest Classifier.
+Implementing the Random Forest Classifier model on the data to make predictions
+The RandomForest Classifier had the highest accuracy hence was selected for use on the data. Feature importances in the RandomForest classifier had to be ascertained to confirm our choice of features as shown in Appendix 67. The outcome of feature importance shows that BodyTemp, BS, HeartRate, and BodyTemp is the descending order of importance of the features. This is close to our feature selection results preformed earlier.
+Implementing the model
+The data prepared data was saved as maternityCopy1. To implement the model the data was divided in train and test data using the train-test-split function. To confirm the performance of the model, a confusion matrix (Appendix 57) and a classification report (Appendix 58) were produced.
+Evaluating the model
+From the classification report, Precision shows positive identifications. We note that for the 0 class, the precision was high. This means that the model predicts the low maternity risk very well. For the medium risk the precision is a bit low but the prediction for High Risk is fairly more precise given the highest precision of 86%. The recall shows the number of false negatives and its fairly high across all classes showing that our model has few false negatives. The Recall column shows the actual positive predictions. The score is fairly high showing that our model performed pretty well. The averages are also pretty fair showing that our model predicted the outcomes pretty fairly. The accuracy is 75% which is also fairly good.
+
+
+
+
+
+
+
+
+
+
+
+
+
+SECTION E: REFERENCES
+https://archive.ics.uci.edu/.
+Ahmed, Marzia. (2023). Maternal Health Risk. UCI Machine Learning Repository. https://doi.org/10.24432/C5DP5D.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+APPENDICES
+Appendix 1
+ 
+Appendix 2a
+ 
+
+
+Appendix 2b
+ 
+Appendix 2b
+
+
+ 
+
+
+Appendix 3
+ 
+Appendix 4
+
+ 
+Appendix 5
+ 
+
+
+Appendix 6
+ Appendix 
+ 
+Appendix 8
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Appendix 9
+
+  
+
+
+
+Appendix 10
+ 
+
+
+
+
+
+
+
+
+
+
+
+Appendix 11
+ 
+Appendix 12
+ 
+
+
+
+Appendix 13
+ 
+Appendix 14
+
+ 
+
+
+
+
+
+
+
+
+Appendix 15
+ 
+Appendix 16
+
+ 
+ 
+
+Appendix 17
+
+ 
+
+
+
+
+
+
+
+
+Appendix 18
+ 
+Appendix 19
+
+ 
+
+
+Appendix 20
+ 
+
+
+
+
+
+
+
+
+
+Appendix 21
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+Appendix 22
+ 
+
+
+
+
+
+
+
+
+Appendix 23
+
+ 
+Appendix 24
+
+ 
+Appendix 25
+ 
+Appendix 26
+
+ 
+
+
+
+
+
+Appendix 27
+ 
+ 
+
+
+
+
+
+
+Appendix 28
+
+ 
+Appendix 29
+
+
+
+ 
+Appendix 30
+
+ 
+Appendix 31
+
+ 
+
+
+
+
+Appendix 32
+ 
+Appendix 33
+ 
+
+
+
+
+
+
+Appendix 34
+
+ 
+Appendix 35
+
+ 
+
+
+Appendix 36
+ 
+Appendix 37
+ 
+
+
+
+
+Appendix 38
+
+ 
+Appendix 39
+
+ 
+
+
+
+
+Appendix 40
+ 
+Appendix 41
+ 
+Appendix 42
+ 
+
+
+
+
+
+
+
+
+Appendix 43
+ 
+
+
+
+
+
+
+
+
+
+
+
+Appendix 44
+ 
+
+
+
+
+
+
+
+
+
+
+
+Appendix 45
+
+ 
+
+
+
+
+
+
+
+
+
+Appendix 46
+ 
+Appendix 47
+
+ 
+
+
+Appendix 48
+
+ 
+Appendix 49
+ 
+
+Appendix 50
+
+ 
+Appendix 51
+
+ 
+
+
+
+
+
+
+
+
+
+
+Appendix 52
+
+ 
+Appendix 53
+
+ 
+
+
+
+Appendix 54
+
+ 
+
+
+
+
+
+
+Appendix 55
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Appendix 56
+ 
+Appendix 57
+ 
+
+
+
+
+Appendix 58
+
+ 
+Appendix 59
+ 
+
+
+
+
+
+
+Appendix 60
+ 
+Appendix 61
+
+ 
+
+
+
+
+Appendix 62
+
+ 
+Appendix 63
+ 
+
+
+
+
+
+Appendix 64
+ 
+Appendix 65
+
+ 
+
+
+Appendix 66
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Appendix 67
+	 
+Appendix 68
+ 
+Appendix 69
+ 
+
+
+
+
+
+
+
